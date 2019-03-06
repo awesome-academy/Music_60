@@ -12,4 +12,19 @@
     <style name="SplashScreenTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name ="android:windowBackground"> @drawable/splash_screen_background</item>
     </style>
+    
+    <!--Style for purple line-->
+    <style name="PurpleLineTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/dp_1</item>
+        <item name="android:background">@color/color_tint_purple</item>
+        <item name="android:layout_margin">@dimen/dp_10</item>
+    </style>
+
+    <!--Style for recycler view on home-->
+    <style name="HomeRecyclerTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
 </resources>

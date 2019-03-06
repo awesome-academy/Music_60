@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Music_60</string>
+    <string name="navigate_next">Navigate Next</string>
+    <string name="latest_songs">Latest Songs</string>
+    <string name="genres">Genres</string>
+    <string name="song_cover">Songs cover</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="online">Online</string>
+    <string name="local">Local</string>
 </resources>
