@@ -21,6 +21,7 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> 
             R.drawable.allaudio, R.drawable.alternative_rock,
             R.drawable.ambient, R.drawable.classical, R.drawable.country_music};
     private LayoutInflater mLayoutInflater;
+    private GenreOnClickListener mGenreOnClickListener;
 
     public GenreAdapter(Context context) {
         mLayoutInflater = LayoutInflater.from(context);
@@ -30,7 +31,7 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> 
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = mLayoutInflater.inflate(R.layout.item_genre, viewGroup, false);
-        return new ViewHolder(view);
+        return new ViewHolder(view, mGenreOnClickListener);
     }
 
     @Override
@@ -43,19 +44,34 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> 
         return GENRE_TITLES.length;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public void setGenreListener(GenreOnClickListener listener) {
+        mGenreOnClickListener = listener;
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ImageView mImageGenre;
         private TextView mTextGenreTitle;
+        private GenreOnClickListener mGenreOnClickListener;
 
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView, GenreOnClickListener listener) {
             super(itemView);
             mImageGenre = itemView.findViewById(R.id.image_genre_cover);
             mTextGenreTitle = itemView.findViewById(R.id.text_genre_title);
+            mGenreOnClickListener = listener;
         }
 
         public void setData(int image, String title) {
             Glide.with(itemView.getContext()).load(image).into(mImageGenre);
             mTextGenreTitle.setText(title);
         }
+
+        @Override
+        public void onClick(View v) {
+            mGenreOnClickListener.onGenreClick();
+        }
+    }
+
+    public interface GenreOnClickListener {
+        void onGenreClick();
     }
 }

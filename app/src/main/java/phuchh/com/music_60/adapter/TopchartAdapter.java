@@ -20,6 +20,7 @@ import phuchh.com.music_60.utils.Constant;
 public class TopchartAdapter extends RecyclerView.Adapter<TopchartAdapter.ViewHolder> {
     private List<Track> mTracks;
     private LayoutInflater mInflater;
+    private TopchartOnClickListener mListener;
 
     public TopchartAdapter(Context context, List<Track> tracks) {
         mInflater = LayoutInflater.from(context);
@@ -30,7 +31,7 @@ public class TopchartAdapter extends RecyclerView.Adapter<TopchartAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = mInflater.inflate(R.layout.item_topchart, viewGroup, false);
-        return new ViewHolder(view);
+        return new ViewHolder(view, mListener);
     }
 
     @Override
@@ -44,14 +45,20 @@ public class TopchartAdapter extends RecyclerView.Adapter<TopchartAdapter.ViewHo
         return mTracks.isEmpty() ? 0 : mTracks.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public void setTopchartListener(TopchartOnClickListener listener) {
+        mListener = listener;
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ImageView mImageCover;
         private TextView mTextTitle;
+        private TopchartOnClickListener mListener;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(View itemView, TopchartOnClickListener listener) {
             super(itemView);
             mImageCover = itemView.findViewById(R.id.image_tc_cover);
             mTextTitle = itemView.findViewById(R.id.text_tc_title);
+            mListener = listener;
         }
 
         public void setData(String imageUrl, String title) {
@@ -61,5 +68,14 @@ public class TopchartAdapter extends RecyclerView.Adapter<TopchartAdapter.ViewHo
                 Glide.with(itemView.getContext()).load(imageUrl).into(mImageCover);
             mTextTitle.setText(title);
         }
+
+        @Override
+        public void onClick(View v) {
+            mListener.onTopchartClick();
+        }
+    }
+
+    public interface TopchartOnClickListener {
+        void onTopchartClick();
     }
 }
