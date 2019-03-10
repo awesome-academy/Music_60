@@ -1,73 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.online.OnlineFragment">
 
-    <TextView
-        android:id="@+id/text_latest"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/dp_10"
-        android:fontFamily="sans-serif-condensed"
-        android:text="@string/latest_songs"
-        android:textColor="@color/color_black"
-        android:textSize="@dimen/sp_18"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/dp_10"
-        android:contentDescription="@string/navigate_next"
-        android:src="@drawable/ic_navigate_next_black_24dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/text_latest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dp_10"
+            android:fontFamily="sans-serif-condensed"
+            android:text="@string/title_latest_songs"
+            android:textColor="@color/color_black"
+            android:textSize="@dimen/sp_18"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_latest"
-        style="@style/HomeRecyclerTheme"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_latest" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dp_10"
+            android:contentDescription="@string/title_navigate_next"
+            android:src="@drawable/ic_navigate_next_black_24dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:id="@+id/line_purple_1"
-        style="@style/PurpleLineTheme"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recycler_latest" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_latest"
+            style="@style/HomeRecyclerTheme"
+            android:nestedScrollingEnabled="true"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_latest" />
 
-    <TextView
-        android:id="@+id/text_genre"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/dp_10"
-        android:layout_marginTop="@dimen/dp_10"
-        android:fontFamily="sans-serif-condensed"
-        android:text="@string/genres"
-        android:textColor="@color/color_black"
-        android:textSize="@dimen/sp_18"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/line_purple_1" />
+        <View
+            android:id="@+id/line_purple_1"
+            style="@style/PurpleLineTheme"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/recycler_latest" />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/dp_10"
-        android:layout_marginTop="@dimen/dp_10"
-        android:contentDescription="@string/navigate_next"
-        android:src="@drawable/ic_navigate_next_black_24dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/line_purple_1" />
+        <TextView
+            android:id="@+id/text_genre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_10"
+            android:fontFamily="sans-serif-condensed"
+            android:text="@string/title_genres"
+            android:textColor="@color/color_black"
+            android:textSize="@dimen/sp_18"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/line_purple_1" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_genres"
-        style="@style/HomeRecyclerTheme"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_genre" />
-</android.support.constraint.ConstraintLayout>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_10"
+            android:contentDescription="@string/title_navigate_next"
+            android:src="@drawable/ic_navigate_next_black_24dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/line_purple_1" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_genres"
+            style="@style/HomeRecyclerTheme"
+            android:nestedScrollingEnabled="true"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_genre" />
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.v4.widget.NestedScrollView>
