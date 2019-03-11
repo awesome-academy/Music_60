@@ -24,19 +24,19 @@ import phuchh.com.music_60.data.source.local.TrackLocalDataSource;
 import phuchh.com.music_60.data.source.remote.TrackRemoteDataSource;
 import phuchh.com.music_60.utils.Constant;
 
-public class OnlineFragment extends Fragment implements OnlineContract.View {
-
+public class OnlineFragment extends Fragment implements OnlineContract.View,
+        TopchartAdapter.TopchartOnClickListener, GenreAdapter.GenreOnClickListener {
+    public static final int SPAN_COUNT = 3;
     private OnlineContract.Presenter mPresenter;
     private RecyclerView mRecyclerLatest;
     private RecyclerView mRecyclerGenre;
 
     public static OnlineFragment newInstance() {
-        OnlineFragment onlineFragment = new OnlineFragment();
-        return onlineFragment;
+        return new OnlineFragment();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_online, container, false);
     }
@@ -46,6 +46,7 @@ public class OnlineFragment extends Fragment implements OnlineContract.View {
         super.onViewCreated(view, savedInstanceState);
         initFragment();
         mPresenter.getTopChart(Constant.ALL_MUSIC, Constant.LIMIT_DEFAULT, Constant.OFFSET_DEFAULT);
+        showGenres();
     }
 
     @Override
@@ -56,8 +57,20 @@ public class OnlineFragment extends Fragment implements OnlineContract.View {
     @Override
     public void showTopChart(List<Track> tracks) {
         TopchartAdapter adapter = new TopchartAdapter(getActivity(), tracks);
+        adapter.setTopchartListener(this);
         mRecyclerLatest.setAdapter(adapter);
-        mRecyclerLatest.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+        mRecyclerLatest.setLayoutManager(new GridLayoutManager(getActivity(), SPAN_COUNT));
+    }
+
+
+    @Override
+    public void onGenreClick() {
+        //TODO: Update genre click listener;
+    }
+
+    @Override
+    public void onTopchartClick() {
+        //TODO: update play music
     }
 
     private void initFragment() {
@@ -66,9 +79,12 @@ public class OnlineFragment extends Fragment implements OnlineContract.View {
         mPresenter = new OnlinePresenter(this,
                 TrackRepository.getInstance(TrackRemoteDataSource.getInstance(),
                         TrackLocalDataSource.getInstance()));
-        GenreAdapter adapter = new GenreAdapter(getActivity());
-        mRecyclerGenre.setAdapter(adapter);
-        mRecyclerGenre.setLayoutManager(new GridLayoutManager(getActivity(), 3));
     }
 
+    private void showGenres() {
+        GenreAdapter adapter = new GenreAdapter(getActivity());
+        adapter.setGenreListener(this);
+        mRecyclerGenre.setAdapter(adapter);
+        mRecyclerGenre.setLayoutManager(new GridLayoutManager(getActivity(), SPAN_COUNT));
+    }
 }
