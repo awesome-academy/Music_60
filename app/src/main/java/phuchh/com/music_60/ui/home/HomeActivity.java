@@ -30,7 +30,7 @@ public class HomeActivity extends AppCompatActivity
 
     private void setUpTabLayout() {
         mTabAdapter = mPresenter.getTabAdapter(getSupportFragmentManager(),
-                getString(R.string.online), getString(R.string.local));
+                getString(R.string.title_online), getString(R.string.title_local));
         mViewPager.setAdapter(mTabAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
     }
