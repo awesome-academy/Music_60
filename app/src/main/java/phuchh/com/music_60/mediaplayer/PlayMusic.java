@@ -26,11 +26,16 @@ public interface PlayMusic {
 
     int getTrack();
 
-    void setTrack(int index);
-
     void next();
 
     void previous();
+
+    interface Media extends PlayMusic{
+        void setTrack(int index);
+    }
+
+    interface Service extends PlayMusic{
+    }
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({PlayerStatus.IDLE,

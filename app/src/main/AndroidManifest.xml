@@ -21,6 +21,7 @@
         </activity>
         <activity android:name=".ui.home.HomeActivity" />
 
+        <service android:name=".service.PlayMusicService" />
     </application>
 
 </manifest>
