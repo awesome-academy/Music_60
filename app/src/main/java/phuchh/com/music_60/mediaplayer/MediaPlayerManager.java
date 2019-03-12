@@ -9,7 +9,7 @@ import java.util.List;
 
 import phuchh.com.music_60.data.model.Track;
 
-public class MediaPlayerManager implements PlayMusic,
+public class MediaPlayerManager implements PlayMusic.Media,
         MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener {
 
     private static final int CHANGE_POSITION = 1;
