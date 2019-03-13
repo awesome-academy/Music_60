@@ -1,5 +1,6 @@
 package phuchh.com.music_60.service;
 
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -8,29 +9,39 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
+import android.widget.RemoteViews;
 
-import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import phuchh.com.music_60.R;
 import phuchh.com.music_60.data.model.Track;
 import phuchh.com.music_60.mediaplayer.MediaPlayerManager;
 import phuchh.com.music_60.mediaplayer.MediaRequest;
 import phuchh.com.music_60.mediaplayer.PlayMusic;
+import phuchh.com.music_60.ui.home.HomeActivity;
 
-public class PlayMusicService extends Service implements PlayMusic.Service, Serializable,
+public class PlayMusicService extends Service implements PlayMusic.Service,
         MediaPlayerManager.OnLoadingTrackListener {
 
-    public static final String EXTRA_REQUEST_CODE = " phuchh.com.music_60.service.EXTRA.REQUEST_CODE";
+    public static final String EXTRA_REQUEST_CODE = "phuchh.com.music_60.service.EXTRA.REQUEST_CODE";
     private static final String WORKER_THREAD_NAME = "ServiceThread";
+    private static final int NOTIFICATION_ID = 3011;
+    private static final int REQUEST_CODE = 0;
     private static Handler mUIHandler;
-    private ServiceHandler mServiceHandler;
     private final IBinder mBinder = new LocalBinder();
+    private ServiceHandler mServiceHandler;
     private MediaPlayerManager mMediaPlayerManager;
+    private RemoteViews mNotificationLayout;
+    private NotificationCompat.Builder mBuilder;
     private PendingIntent mNextPendingIntent;
     private PendingIntent mPreviousPendingIntent;
     private PendingIntent mPlayPendingIntent;
+    private NotificationManager mNotificationManager;
 
     @Override
     public void onCreate() {
@@ -38,7 +49,8 @@ public class PlayMusicService extends Service implements PlayMusic.Service, Seri
         mMediaPlayerManager = MediaPlayerManager.getInstance(this);
         HandlerThread thread = new HandlerThread(WORKER_THREAD_NAME);
         thread.start();
-        mServiceHandler = new ServiceHandler(this);
+        mServiceHandler = new ServiceHandler(this, thread.getLooper());
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     @Override
@@ -79,6 +91,7 @@ public class PlayMusicService extends Service implements PlayMusic.Service, Seri
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mBuilder = null;
         mMediaPlayerManager.setMediaPlayer(null);
     }
 
@@ -142,15 +155,19 @@ public class PlayMusicService extends Service implements PlayMusic.Service, Seri
         mMediaPlayerManager.previous();
     }
 
-    public static void setUIHandler(Handler uiHandler) {
+    public void setUIHandler(Handler uiHandler) {
         mUIHandler = uiHandler;
     }
 
     @Override
     public void onStartLoading() {
+        if (mBuilder == null) {
+            createNotification();
+        } else {
+            updateNotification(getTrack());
+        }
         if (mUIHandler != null)
             mUIHandler.sendEmptyMessage(MediaRequest.LOADING);
-        //TODO: update notification
     }
 
     @Override
@@ -163,16 +180,19 @@ public class PlayMusicService extends Service implements PlayMusic.Service, Seri
 
     @Override
     public void onLoadingSuccess() {
+        updateNotification();
         mUIHandler.sendEmptyMessage(MediaRequest.SUCCESS);
     }
 
     @Override
     public void onTrackPaused() {
+        updateNotification();
         mUIHandler.sendEmptyMessage(MediaRequest.PAUSED);
     }
 
     @Override
     public void onTrackStopped() {
+        updateNotification();
         mUIHandler.sendEmptyMessage(MediaRequest.STOPPED);
     }
 
@@ -214,7 +234,7 @@ public class PlayMusicService extends Service implements PlayMusic.Service, Seri
         sendMessage(ServiceRequest.REQUEST_SEEK, position);
     }
 
-    public void requestPrepareAsync() {
+    public void requestPrepare() {
         mServiceHandler.sendEmptyMessage(ServiceRequest.REQUEST_PREPARE);
     }
 
@@ -226,15 +246,83 @@ public class PlayMusicService extends Service implements PlayMusic.Service, Seri
         mMediaPlayerManager.setTracks(tracks);
     }
 
-    public MediaPlayerManager getMediaPlayerManager() {
-        return mMediaPlayerManager;
-    }
-
     private void sendMessage(int request, int index) {
         Message message = new Message();
         message.what = request;
         message.arg1 = index;
         mServiceHandler.sendMessage(message);
+    }
+
+    private void createNotification() {
+        mBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.music_cover)
+                .setStyle(new NotificationCompat.DecoratedCustomViewStyle());
+        Intent nextIntent = new Intent(this, HomeActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addNextIntentWithParentStack(nextIntent);
+        PendingIntent resultPendingIntent = stackBuilder
+                .getPendingIntent(REQUEST_CODE, PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(resultPendingIntent);
+        initLayoutNotification(getTrack());
+        startForeground(NOTIFICATION_ID, mBuilder.build());
+        createPendingIntent();
+    }
+
+    private void createPendingIntent() {
+        createNextPendingIntent();
+        createPreviousPendingIntent();
+        createPlayPendingIntent();
+    }
+
+    private void initLayoutNotification(int index) {
+        Track track = getTracks().get(index);
+        mNotificationLayout = new RemoteViews(getPackageName(), R.layout.layout_notification);
+        mNotificationLayout.setTextViewText(R.id.text_noti_song_name, track.getTitle());
+        mNotificationLayout.setImageViewResource(R.id.image_play, R.drawable.ic_noti_pause);
+    }
+
+    private void updateNotification(int index) {
+        Track track = getTracks().get(index);
+        mNotificationLayout.setTextViewText(R.id.text_noti_song_name, track.getTitle());
+        if (isPlaying()) {
+            mNotificationLayout.setImageViewResource(R.id.image_play, R.drawable.ic_noti_pause);
+            mBuilder.setOngoing(false);
+            mBuilder.setContent(mNotificationLayout);
+            mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+            return;
+        }
+        mNotificationLayout.setImageViewResource(R.id.image_play, R.drawable.ic_noti_play);
+        mBuilder.setOngoing(true);
+        mBuilder.setContent(mNotificationLayout);
+        mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+    }
+
+    private void updateNotification() {
+        if (!isPlaying()) {
+            mNotificationLayout.setImageViewResource(R.id.image_play, R.drawable.ic_noti_play);
+            mBuilder.setOngoing(false);
+            mBuilder.setContent(mNotificationLayout);
+            mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+            return;
+        }
+        mNotificationLayout.setImageViewResource(R.id.image_play, R.drawable.ic_noti_pause);
+        mBuilder.setContent(mNotificationLayout);
+        mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+    }
+
+    private void createNextPendingIntent() {
+        sendPendingIntent(ServiceRequest.VALUE_NEXT_SONG);
+        mNotificationLayout.setOnClickPendingIntent(R.id.image_next, mNextPendingIntent);
+    }
+
+    private void createPreviousPendingIntent() {
+        sendPendingIntent(ServiceRequest.VALUE_PREVIOUS_SONG);
+        mNotificationLayout.setOnClickPendingIntent(R.id.image_previous, mPreviousPendingIntent);
+    }
+
+    private void createPlayPendingIntent() {
+        sendPendingIntent(ServiceRequest.VALUE_PLAY_SONG);
+        mNotificationLayout.setOnClickPendingIntent(R.id.image_play, mPlayPendingIntent);
     }
 
     private void sendPendingIntent(int requestValue) {
@@ -261,7 +349,8 @@ public class PlayMusicService extends Service implements PlayMusic.Service, Seri
     private static final class ServiceHandler extends Handler {
         private final WeakReference<PlayMusicService> mService;
 
-        private ServiceHandler(PlayMusicService service) {
+        private ServiceHandler(PlayMusicService service, Looper looper) {
+            super(looper);
             mService = new WeakReference<>(service);
         }
 
