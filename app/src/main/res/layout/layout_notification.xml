@@ -38,7 +38,7 @@
                 android:layout_width="@dimen/dp_32"
                 android:layout_height="@dimen/dp_32"
                 android:layout_margin="@dimen/dp_5"
-                android:src="@drawable/ic_previous" />
+                android:src="@drawable/ic_noti_previous" />
 
             <ImageView
                 android:id="@+id/image_play"
@@ -52,7 +52,7 @@
                 android:layout_width="@dimen/dp_32"
                 android:layout_height="@dimen/dp_32"
                 android:layout_margin="@dimen/dp_5"
-                android:src="@drawable/ic_next" />
+                android:src="@drawable/ic_noti_next" />
         </LinearLayout>
 
     </LinearLayout>
