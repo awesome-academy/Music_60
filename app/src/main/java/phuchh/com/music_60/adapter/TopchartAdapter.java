@@ -59,6 +59,7 @@ public class TopchartAdapter extends RecyclerView.Adapter<TopchartAdapter.ViewHo
             mImageCover = itemView.findViewById(R.id.image_tc_cover);
             mTextTitle = itemView.findViewById(R.id.text_tc_title);
             mListener = listener;
+            itemView.setOnClickListener(this);
         }
 
         public void setData(String imageUrl, String title) {
@@ -71,11 +72,11 @@ public class TopchartAdapter extends RecyclerView.Adapter<TopchartAdapter.ViewHo
 
         @Override
         public void onClick(View v) {
-            mListener.onTopchartClick();
+            mListener.onTopchartClick(getAdapterPosition());
         }
     }
 
     public interface TopchartOnClickListener {
-        void onTopchartClick();
+        void onTopchartClick(int position);
     }
 }

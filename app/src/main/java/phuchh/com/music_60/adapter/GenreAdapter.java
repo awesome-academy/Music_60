@@ -58,6 +58,7 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> 
             mImageGenre = itemView.findViewById(R.id.image_genre_cover);
             mTextGenreTitle = itemView.findViewById(R.id.text_genre_title);
             mGenreOnClickListener = listener;
+            itemView.setOnClickListener(this);
         }
 
         public void setData(int image, String title) {

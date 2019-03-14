@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/color_black"
     android:gravity="center"
     android:orientation="horizontal"
     android:paddingRight="@dimen/dp_10">
@@ -25,7 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/dp_10"
             android:singleLine="true"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/color_black"/>
 
         <LinearLayout
             android:layout_width="match_parent"
