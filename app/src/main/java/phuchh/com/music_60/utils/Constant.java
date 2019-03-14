@@ -20,4 +20,5 @@ public class Constant {
             "alternativerock", "ambient", "classical", "country"};
     public static final String BREAK_LINE = "\n";
     public static final String INTERNET_NOT_AVAIABLE = "The internet is not available";
+    public static final int UPDATE_SEEKBAR = 283;
 }

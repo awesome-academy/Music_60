@@ -1,8 +1,10 @@
 package phuchh.com.music_60.ui.online;
 
+import android.content.ComponentName;
 import android.content.Context;
-import android.net.Uri;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,7 +24,10 @@ import phuchh.com.music_60.data.model.Track;
 import phuchh.com.music_60.data.source.TrackRepository;
 import phuchh.com.music_60.data.source.local.TrackLocalDataSource;
 import phuchh.com.music_60.data.source.remote.TrackRemoteDataSource;
+import phuchh.com.music_60.service.PlayMusicService;
 import phuchh.com.music_60.utils.Constant;
+
+import static phuchh.com.music_60.service.PlayMusicService.getMyServiceIntent;
 
 public class OnlineFragment extends Fragment implements OnlineContract.View,
         TopchartAdapter.TopchartOnClickListener, GenreAdapter.GenreOnClickListener {
@@ -30,6 +35,9 @@ public class OnlineFragment extends Fragment implements OnlineContract.View,
     private OnlineContract.Presenter mPresenter;
     private RecyclerView mRecyclerLatest;
     private RecyclerView mRecyclerGenre;
+    private ServiceConnection mConnection;
+    private PlayMusicService mService;
+    private List<Track> mTracks;
 
     public static OnlineFragment newInstance() {
         return new OnlineFragment();
@@ -42,11 +50,23 @@ public class OnlineFragment extends Fragment implements OnlineContract.View,
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        bindToService();
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initFragment();
         mPresenter.getTopChart(Constant.ALL_MUSIC, Constant.LIMIT_DEFAULT, Constant.OFFSET_DEFAULT);
         showGenres();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getActivity().unbindService(mConnection);
     }
 
     @Override
@@ -56,12 +76,12 @@ public class OnlineFragment extends Fragment implements OnlineContract.View,
 
     @Override
     public void showTopChart(List<Track> tracks) {
+        mTracks = tracks;
         TopchartAdapter adapter = new TopchartAdapter(getActivity(), tracks);
         adapter.setTopchartListener(this);
         mRecyclerLatest.setAdapter(adapter);
         mRecyclerLatest.setLayoutManager(new GridLayoutManager(getActivity(), SPAN_COUNT));
     }
-
 
     @Override
     public void onGenreClick() {
@@ -69,8 +89,26 @@ public class OnlineFragment extends Fragment implements OnlineContract.View,
     }
 
     @Override
-    public void onTopchartClick() {
-        //TODO: update play music
+    public void onTopchartClick(int index) {
+        mService.setTracks(mTracks);
+        mService.createTrack(index);
+    }
+
+    private void bindToService() {
+        mConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                PlayMusicService.LocalBinder binder = (PlayMusicService.LocalBinder) iBinder;
+                mService = binder.getService();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                getActivity().unbindService(mConnection);
+            }
+        };
+        getActivity().bindService(getMyServiceIntent(getActivity()),
+                mConnection, Context.BIND_AUTO_CREATE);
     }
 
     private void initFragment() {

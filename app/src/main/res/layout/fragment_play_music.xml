@@ -7,7 +7,7 @@
     tools:context=".ui.playmusic.PlayMusicFragment">
 
     <ImageView
-        android:id="@+id/image_cover_main"
+        android:id="@+id/image_main_cover"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clickable="false"
