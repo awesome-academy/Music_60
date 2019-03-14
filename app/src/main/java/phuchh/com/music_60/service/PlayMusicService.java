@@ -279,6 +279,7 @@ public class PlayMusicService extends Service implements PlayMusic.Service,
         mNotificationLayout = new RemoteViews(getPackageName(), R.layout.layout_notification);
         mNotificationLayout.setTextViewText(R.id.text_noti_song_name, track.getTitle());
         mNotificationLayout.setImageViewResource(R.id.image_play, R.drawable.ic_noti_pause);
+        //TODO update noti image
     }
 
     private void updateNotification(int index) {

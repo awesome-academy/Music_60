@@ -157,7 +157,7 @@
             android:id="@+id/button_main_pause"
             style="@style/PlayButtonTheme"
             android:src="@drawable/ic_pause_button"
-            android:visibility="gone"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.501"

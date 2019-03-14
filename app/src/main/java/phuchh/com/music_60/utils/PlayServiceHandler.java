@@ -34,14 +34,14 @@ public class PlayServiceHandler extends Handler {
                 fragment.loadingSuccess();
                 break;
             case MediaRequest.PAUSED:
-                //TODO: Update pause
+                fragment.showPlay();
                 break;
             case MediaRequest.FAILURE:
                 Toast.makeText(activity.getApplicationContext(), (String) msg.obj,
                         Toast.LENGTH_SHORT).show();
                 break;
             case MediaRequest.STOPPED:
-                //TODO update stop
+                fragment.showPlay();
                 break;
             case Constant.UPDATE_SEEKBAR:
                 fragment.requestUpdateSeekBar();
