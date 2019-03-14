@@ -12,6 +12,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+
 import phuchh.com.music_60.R;
 import phuchh.com.music_60.data.source.TrackRepository;
 import phuchh.com.music_60.data.source.local.TrackLocalDataSource;
@@ -35,6 +37,7 @@ public class HomeActivity extends AppCompatActivity
     private PlayMusicService mService;
     private Handler mHandler;
     private PlayMusicFragment mPlayFragment;
+    private SlidingUpPanelLayout mLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +58,17 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (mLayout != null &&
+                (mLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED ||
+                        mLayout.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED)) {
+            mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     private void setUpTabLayout() {
         mTabAdapter = mPresenter.getTabAdapter(getSupportFragmentManager(),
                 getString(R.string.title_online), getString(R.string.title_local));
@@ -63,6 +77,7 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void initView() {
+        mLayout = findViewById(R.id.activity_home);
         mPresenter = new HomePresenter(this,
                 TrackRepository.getInstance(TrackRemoteDataSource.getInstance(),
                         TrackLocalDataSource.getInstance()));

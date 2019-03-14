@@ -8,7 +8,11 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +32,7 @@ import phuchh.com.music_60.utils.StringUtil;
 
 import static phuchh.com.music_60.service.PlayMusicService.getMyServiceIntent;
 
-public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChangeListener {
+public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChangeListener, View.OnClickListener  {
 
     private static final int START_POSITION = 0;
     private static final long MESSAGE_UPDATE_DELAY = 1000;
@@ -92,6 +96,32 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
     public void onStopTrackingTouch(SeekBar seekBar) {
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.button_main_pause:
+                onPauseClicked();
+                break;
+            case R.id.button_main_play:
+                onPlayClicked();
+                break;
+            case R.id.button_next:
+                onNextClicked();
+                break;
+            case R.id.button_previous:
+                onPreviousClicked();
+                break;
+            case R.id.button_toolbar_pause:
+                onPauseClicked();
+                break;
+            case R.id.button_toolbar_play:
+                onPlayClicked();
+                break;
+            default:
+                break;
+        }
+    }
+
     public void setHandler(Handler handler) {
         mHandler = handler;
     }
@@ -142,10 +172,7 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
         mButtonMainPlay.setClickable(true);
         mButtonPrevious.setClickable(true);
         mButtonNext.setClickable(true);
-        mButtonMainPlay.setVisibility(View.GONE);
-        mButtonMainPause.setVisibility(View.VISIBLE);
-        mButtonBarPlay.setVisibility(View.GONE);
-        mButtomBarPause.setVisibility(View.VISIBLE);
+        showPause();
         mSeekBar.setMax(duration);
         mTextDuration.setText(StringUtil.convertMilisecondToFormatTime(duration));
         mHandler.sendEmptyMessage(Constant.UPDATE_SEEKBAR);
@@ -153,6 +180,20 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
 
     public void requestUpdateSeekBar() {
         updateSeekBar();
+    }
+
+    public void showPlay() {
+        mButtonMainPause.setVisibility(View.INVISIBLE);
+        mButtonMainPlay.setVisibility(View.VISIBLE);
+        mButtomBarPause.setVisibility(View.INVISIBLE);
+        mButtonBarPlay.setVisibility(View.VISIBLE);
+    }
+
+    private void showPause() {
+        mButtonMainPlay.setVisibility(View.INVISIBLE);
+        mButtonMainPause.setVisibility(View.VISIBLE);
+        mButtonBarPlay.setVisibility(View.INVISIBLE);
+        mButtomBarPause.setVisibility(View.VISIBLE);
     }
 
     private void initView() {
@@ -181,6 +222,30 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
 
     private void setListener() {
         mSeekBar.setOnSeekBarChangeListener(this);
+        mButtonMainPlay.setOnClickListener(this);
+        mButtonMainPause.setOnClickListener(this);
+        mButtomBarPause.setOnClickListener(this);
+        mButtonBarPlay.setOnClickListener(this);
+        mButtonNext.setOnClickListener(this);
+        mButtonPrevious.setOnClickListener(this);
+    }
+
+    private void onPauseClicked() {
+        mService.pauseTrack();
+        showPlay();
+    }
+
+    private void onPlayClicked() {
+        mService.startTrack();
+        showPause();
+    }
+
+    private void onNextClicked() {
+        mService.nextTrack();
+    }
+
+    private void onPreviousClicked() {
+        mService.previousTrack();
     }
 
     private void bindToService() {
