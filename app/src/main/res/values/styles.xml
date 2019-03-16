@@ -12,7 +12,7 @@
     <style name="SplashScreenTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name ="android:windowBackground"> @drawable/splash_screen_background</item>
     </style>
-    
+
     <!--Style for purple line-->
     <style name="PurpleLineTheme">
         <item name="android:layout_width">match_parent</item>

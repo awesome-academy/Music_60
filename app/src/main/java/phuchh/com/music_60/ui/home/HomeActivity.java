@@ -5,12 +5,10 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -18,10 +16,9 @@ import phuchh.com.music_60.R;
 import phuchh.com.music_60.data.source.TrackRepository;
 import phuchh.com.music_60.data.source.local.TrackLocalDataSource;
 import phuchh.com.music_60.data.source.remote.TrackRemoteDataSource;
-import phuchh.com.music_60.mediaplayer.MediaRequest;
 import phuchh.com.music_60.service.PlayMusicService;
+import phuchh.com.music_60.ui.online.OnlineFragment;
 import phuchh.com.music_60.ui.playmusic.PlayMusicFragment;
-import phuchh.com.music_60.utils.Constant;
 import phuchh.com.music_60.utils.PlayServiceHandler;
 
 import static phuchh.com.music_60.service.PlayMusicService.getMyServiceIntent;
@@ -37,6 +34,7 @@ public class HomeActivity extends AppCompatActivity
     private PlayMusicService mService;
     private Handler mHandler;
     private PlayMusicFragment mPlayFragment;
+    private OnlineFragment mOnlineFragment;
     private SlidingUpPanelLayout mLayout;
 
     @Override
@@ -46,7 +44,7 @@ public class HomeActivity extends AppCompatActivity
         initView();
         setUpTabLayout();
         initHandler();
-        bindToService();
+        boundToService();
     }
 
     @Override
@@ -89,7 +87,7 @@ public class HomeActivity extends AppCompatActivity
         fragmentTransaction.commit();
     }
 
-    private void bindToService() {
+    private void boundToService() {
         mConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -103,11 +101,10 @@ public class HomeActivity extends AppCompatActivity
             public void onServiceDisconnected(ComponentName componentName) {
             }
         };
-        bindService(getMyServiceIntent(this), mConnection, BIND_AUTO_CREATE);
+        bindService(getMyServiceIntent(this), mConnection, BIND_ADJUST_WITH_ACTIVITY);
     }
 
     private void initHandler() {
         mHandler = new PlayServiceHandler(this, mPlayFragment);
     }
-
 }

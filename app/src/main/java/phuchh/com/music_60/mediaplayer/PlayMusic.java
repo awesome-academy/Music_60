@@ -30,12 +30,11 @@ public interface PlayMusic {
 
     void previous();
 
-    interface Media extends PlayMusic{
-        void setTrack(int index);
-    }
+    void loop(boolean isLoop);
 
-    interface Service extends PlayMusic{
-    }
+    void setPlayType(int playType);
+
+    void setTrack(int index);
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({PlayerStatus.IDLE,

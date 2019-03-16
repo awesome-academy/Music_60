@@ -25,7 +25,7 @@ import phuchh.com.music_60.mediaplayer.MediaRequest;
 import phuchh.com.music_60.mediaplayer.PlayMusic;
 import phuchh.com.music_60.ui.home.HomeActivity;
 
-public class PlayMusicService extends Service implements PlayMusic.Service,
+public class PlayMusicService extends Service implements PlayMusic,
         MediaPlayerManager.OnLoadingTrackListener {
 
     public static final String EXTRA_REQUEST_CODE = "phuchh.com.music_60.service.EXTRA.REQUEST_CODE";
@@ -118,6 +118,21 @@ public class PlayMusicService extends Service implements PlayMusic.Service,
     @Override
     public void stop() {
         mMediaPlayerManager.stop();
+    }
+
+    @Override
+    public void loop(boolean isLoop) {
+        mMediaPlayerManager.loop(isLoop);
+    }
+
+    @Override
+    public void setPlayType(int playType) {
+        mMediaPlayerManager.setPlayType(playType);
+    }
+
+    @Override
+    public void setTrack(int index) {
+        mMediaPlayerManager.setTrack(index);
     }
 
     @Override

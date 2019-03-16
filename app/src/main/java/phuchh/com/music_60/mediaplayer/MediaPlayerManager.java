@@ -6,10 +6,11 @@ import android.media.MediaPlayer;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 import phuchh.com.music_60.data.model.Track;
 
-public class MediaPlayerManager implements PlayMusic.Media,
+public class MediaPlayerManager implements PlayMusic,
         MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener {
 
     private static final int CHANGE_POSITION = 1;
@@ -19,6 +20,7 @@ public class MediaPlayerManager implements PlayMusic.Media,
     private int mCurrentIndex;
     private int mState;
     private OnLoadingTrackListener mListener;
+    private int mPlayType;
 
     private MediaPlayerManager(Context context) {
         mListener = (OnLoadingTrackListener) context;
@@ -83,6 +85,18 @@ public class MediaPlayerManager implements PlayMusic.Media,
     }
 
     @Override
+    public void loop(boolean isLoop) {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.setLooping(isLoop);
+        }
+    }
+
+    @Override
+    public void setPlayType(int playType) {
+        mPlayType = playType;
+    }
+
+    @Override
     public int getDuration() {
         if (mMediaPlayer != null && mState >= PlayerStatus.STARTED) {
             return mMediaPlayer.getDuration();
@@ -122,6 +136,12 @@ public class MediaPlayerManager implements PlayMusic.Media,
 
     @Override
     public void next() {
+        if (mPlayType == PlayType.SHUFFLE) {
+            mCurrentIndex = randomTrack();
+            create(mCurrentIndex);
+            mListener.onChangeTrack();
+            return;
+        }
         mCurrentIndex++;
         mCurrentIndex = mCurrentIndex == mTracks.size() ? 0 : mCurrentIndex;
         create(mCurrentIndex);
@@ -141,10 +161,22 @@ public class MediaPlayerManager implements PlayMusic.Media,
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-        if (mCurrentIndex == mTracks.size() - CHANGE_POSITION && mState != PlayerStatus.STOPPED) {
-            stop();
-        } else {
-            next();
+        switch (mPlayType) {
+            case PlayType.SHUFFLE:
+                if (mCurrentIndex == mTracks.size() - CHANGE_POSITION && mState != PlayerStatus.STOPPED) {
+                    stop();
+                    return;
+                }
+                next();
+                break;
+            case PlayType.LOOP_ALL:
+                next();
+                break;
+            case PlayType.LOOP_ONE:
+                start();
+                break;
+            default:
+                break;
         }
     }
 
@@ -177,6 +209,15 @@ public class MediaPlayerManager implements PlayMusic.Media,
         } catch (IOException e) {
             mListener.onLoadingFail(e.getMessage());
         }
+    }
+
+    private int randomTrack() {
+        int currentSong = getTrack();
+        Random r = new Random();
+        int result = r.nextInt(getTracks().size());
+        if (result == currentSong)
+            return ++result;
+        return result;
     }
 
     public interface OnLoadingTrackListener {
