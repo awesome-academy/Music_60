@@ -12,7 +12,10 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.util.List;
+
 import phuchh.com.music_60.R;
+import phuchh.com.music_60.data.model.Track;
 import phuchh.com.music_60.data.source.TrackRepository;
 import phuchh.com.music_60.data.source.local.TrackLocalDataSource;
 import phuchh.com.music_60.data.source.remote.TrackRemoteDataSource;

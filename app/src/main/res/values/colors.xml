@@ -8,4 +8,5 @@
     <color name="color_black">#000</color>
     <color name="color_blur">#99000000</color>
     <color name="color_dark_brown">#484848</color>
+    <color name="color_white_smoke">#F8F8F8</color>
 </resources>
