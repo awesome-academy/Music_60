@@ -52,7 +52,7 @@ public class OnlineFragment extends Fragment implements OnlineContract.View,
     @Override
     public void onStart() {
         super.onStart();
-        bindToService();
+        boundToService();
     }
 
     @Override
@@ -93,24 +93,6 @@ public class OnlineFragment extends Fragment implements OnlineContract.View,
         mService.setTracks(mTracks);
         mService.createTrack(index);
     }
-
-    private void bindToService() {
-        mConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-                PlayMusicService.LocalBinder binder = (PlayMusicService.LocalBinder) iBinder;
-                mService = binder.getService();
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName componentName) {
-                getActivity().unbindService(mConnection);
-            }
-        };
-        getActivity().bindService(getMyServiceIntent(getActivity()),
-                mConnection, Context.BIND_AUTO_CREATE);
-    }
-
     private void initFragment() {
         mRecyclerLatest = getView().findViewById(R.id.recycler_latest);
         mRecyclerGenre = getView().findViewById(R.id.recycler_genres);
@@ -124,5 +106,21 @@ public class OnlineFragment extends Fragment implements OnlineContract.View,
         adapter.setGenreListener(this);
         mRecyclerGenre.setAdapter(adapter);
         mRecyclerGenre.setLayoutManager(new GridLayoutManager(getActivity(), SPAN_COUNT));
+    }
+
+    private void boundToService() {
+        mConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                PlayMusicService.LocalBinder binder = (PlayMusicService.LocalBinder) iBinder;
+                mService = binder.getService();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                getActivity().unbindService(mConnection);
+            }
+        };
+        getActivity().bindService(getMyServiceIntent(getActivity()), mConnection, Context.BIND_AUTO_CREATE);
     }
 }

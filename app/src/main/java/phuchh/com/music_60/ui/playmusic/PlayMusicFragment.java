@@ -8,11 +8,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,17 +18,17 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 
 import phuchh.com.music_60.R;
 import phuchh.com.music_60.data.model.Track;
+import phuchh.com.music_60.mediaplayer.PlayType;
 import phuchh.com.music_60.service.PlayMusicService;
 import phuchh.com.music_60.utils.Constant;
 import phuchh.com.music_60.utils.StringUtil;
 
 import static phuchh.com.music_60.service.PlayMusicService.getMyServiceIntent;
 
-public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChangeListener, View.OnClickListener  {
+public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChangeListener, View.OnClickListener {
 
     private static final int START_POSITION = 0;
     private static final long MESSAGE_UPDATE_DELAY = 1000;
@@ -45,7 +41,10 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
     private ImageButton mButtonMainPlay;
     private ImageButton mButtonMainPause;
     private ImageButton mButtonBarPlay;
-    private ImageButton mButtomBarPause;
+    private ImageButton mButtonBarPause;
+    private ImageButton mButtonShuffle;
+    private ImageButton mButtonLoopAll;
+    private ImageButton mButtonLoopOne;
     private SeekBar mSeekBar;
     private TextView mTextCurrentPosition;
     private TextView mTextDuration;
@@ -67,7 +66,7 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
     @Override
     public void onStart() {
         super.onStart();
-        bindToService();
+        boundToService();
     }
 
     @Override
@@ -117,6 +116,15 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
             case R.id.button_toolbar_play:
                 onPlayClicked();
                 break;
+            case R.id.button_loop_all:
+                onLoopAllClicked();
+                break;
+            case R.id.button_loop_one:
+                onLoopOneClicked();
+                break;
+            case R.id.button_shuffle:
+                onShuffleClicked();
+                break;
             default:
                 break;
         }
@@ -139,30 +147,7 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
         mTextDuration.setText(StringUtil.convertMilisecondToFormatTime(START_POSITION));
         setMainCover();
         setBarCover();
-    }
-
-    private void setBarCover() {
-        if (mTrack.getArtworkUrl().equals(Constant.NULL_RESULT)) {
-            Glide.with(this)
-                    .load(R.drawable.music_cover)
-                    .into(mImageBarCover);
-            return;
-        }
-        Glide.with(this)
-                .load(mTrack.getArtworkUrl())
-                .into(mImageBarCover);
-    }
-
-    private void setMainCover() {
-        if (mTrack.getArtworkUrl().equals(Constant.NULL_RESULT)) {
-            Glide.with(this)
-                    .load(R.drawable.music_cover)
-                    .into(mImageMainCover);
-            return;
-        }
-        Glide.with(this)
-                .load(mTrack.getArtworkUrl())
-                .into(mImageMainCover);
+        showPause();
     }
 
     public void loadingSuccess() {
@@ -185,7 +170,7 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
     public void showPlay() {
         mButtonMainPause.setVisibility(View.INVISIBLE);
         mButtonMainPlay.setVisibility(View.VISIBLE);
-        mButtomBarPause.setVisibility(View.INVISIBLE);
+        mButtonBarPause.setVisibility(View.INVISIBLE);
         mButtonBarPlay.setVisibility(View.VISIBLE);
     }
 
@@ -193,7 +178,22 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
         mButtonMainPlay.setVisibility(View.INVISIBLE);
         mButtonMainPause.setVisibility(View.VISIBLE);
         mButtonBarPlay.setVisibility(View.INVISIBLE);
-        mButtomBarPause.setVisibility(View.VISIBLE);
+        mButtonBarPause.setVisibility(View.VISIBLE);
+    }
+
+    private void setBarCover() {
+        Glide.with(this)
+                .load(mTrack.getArtworkUrl())
+                .placeholder(R.drawable.music_cover)
+                .into(mImageBarCover);
+    }
+
+    private void setMainCover() {
+        Glide.with(this)
+                .load(mTrack.getArtworkUrl())
+                .placeholder(R.drawable.music_cover)
+                .into(mImageMainCover);
+
     }
 
     private void initView() {
@@ -206,10 +206,13 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
         mButtonMainPlay = getView().findViewById(R.id.button_main_play);
         mButtonMainPause = getView().findViewById(R.id.button_main_pause);
         mButtonBarPlay = getView().findViewById(R.id.button_toolbar_play);
-        mButtomBarPause = getView().findViewById(R.id.button_toolbar_pause);
+        mButtonBarPause = getView().findViewById(R.id.button_toolbar_pause);
         mSeekBar = getView().findViewById(R.id.seekbar_duration);
         mTextCurrentPosition = getView().findViewById(R.id.text_start_time);
         mTextDuration = getView().findViewById(R.id.text_end_time);
+        mButtonShuffle = getView().findViewById(R.id.button_shuffle);
+        mButtonLoopAll = getView().findViewById(R.id.button_loop_all);
+        mButtonLoopOne = getView().findViewById(R.id.button_loop_one);
         setListener();
     }
 
@@ -224,10 +227,13 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
         mSeekBar.setOnSeekBarChangeListener(this);
         mButtonMainPlay.setOnClickListener(this);
         mButtonMainPause.setOnClickListener(this);
-        mButtomBarPause.setOnClickListener(this);
+        mButtonBarPause.setOnClickListener(this);
         mButtonBarPlay.setOnClickListener(this);
         mButtonNext.setOnClickListener(this);
         mButtonPrevious.setOnClickListener(this);
+        mButtonLoopAll.setOnClickListener(this);
+        mButtonLoopOne.setOnClickListener(this);
+        mButtonShuffle.setOnClickListener(this);
     }
 
     private void onPauseClicked() {
@@ -248,7 +254,28 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
         mService.previousTrack();
     }
 
-    private void bindToService() {
+    private void onLoopAllClicked() {
+        mButtonLoopAll.setVisibility(View.INVISIBLE);
+        mButtonLoopOne.setVisibility(View.VISIBLE);
+        mService.setPlayType(PlayType.LOOP_ONE);
+        mService.loop(true);
+    }
+
+    private void onLoopOneClicked() {
+        mButtonLoopOne.setVisibility(View.INVISIBLE);
+        mButtonShuffle.setVisibility(View.VISIBLE);
+        mService.setPlayType(PlayType.SHUFFLE);
+        mService.loop(false);
+    }
+
+    private void onShuffleClicked() {
+        mButtonShuffle.setVisibility(View.INVISIBLE);
+        mButtonLoopAll.setVisibility(View.VISIBLE);
+        mService.setPlayType(PlayType.LOOP_ALL);
+        mService.loop(false);
+    }
+
+    private void boundToService() {
         mConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
