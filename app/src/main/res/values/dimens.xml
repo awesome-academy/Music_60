@@ -15,4 +15,8 @@
     <dimen name="dp_15">15dp</dimen>
     <dimen name="sp_12">12sp</dimen>
     <dimen name="dp_24">24dp</dimen>
+    <dimen name="dp_350">350dp</dimen>
+    <dimen name="dp_400">400dp</dimen>
+    <dimen name="sp_15">15sp</dimen>
+    <dimen name="dp_250">250dp</dimen>
 </resources>
