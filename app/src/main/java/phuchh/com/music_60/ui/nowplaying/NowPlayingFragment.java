@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import java.util.List;
 import phuchh.com.music_60.R;
 import phuchh.com.music_60.adapter.NowPlayingAdapter;
 import phuchh.com.music_60.data.model.Track;
+import phuchh.com.music_60.utils.SimpleItemTouchHelperCallback;
 
 public class NowPlayingFragment extends BottomSheetDialogFragment {
 
@@ -25,6 +27,8 @@ public class NowPlayingFragment extends BottomSheetDialogFragment {
     private RecyclerView mRecyclerNowPlaying;
     private List<Track> mTracks;
     private int mIndex;
+    private NowPlayingAdapter.NowPlayingOnClickListener mOnClickListener;
+    private NowPlayingAdapter.NowPlayingOnChangeListener mOnChangeListener;
 
     public static NowPlayingFragment newInstance(List<Track> tracks, int index) {
         NowPlayingFragment fragment = new NowPlayingFragment();
@@ -59,13 +63,27 @@ public class NowPlayingFragment extends BottomSheetDialogFragment {
         showPlaylist();
     }
 
+    public void setOnClickListener(NowPlayingAdapter.NowPlayingOnClickListener listener){
+        mOnClickListener = listener;
+    }
+
+    public void setOnChangeListener(NowPlayingAdapter.NowPlayingOnChangeListener listener){
+        mOnChangeListener = listener;
+    }
+
     private void initView() {
         mRecyclerNowPlaying = getView().findViewById(R.id.recycler_now_playing);
     }
 
     private void showPlaylist() {
         NowPlayingAdapter adapter = new NowPlayingAdapter(getActivity(), mTracks, mIndex);
+        adapter.setOnClickListener(mOnClickListener);
+        adapter.setOnChangeListener(mOnChangeListener);
         mRecyclerNowPlaying.setAdapter(adapter);
         mRecyclerNowPlaying.setLayoutManager(new LinearLayoutManager(getActivity()));
+        ItemTouchHelper.Callback callback =
+                new SimpleItemTouchHelperCallback(adapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(mRecyclerNowPlaying);
     }
 }

@@ -1,6 +1,7 @@
 package phuchh.com.music_60.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,15 +10,19 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Collections;
 import java.util.List;
 
 import phuchh.com.music_60.R;
 import phuchh.com.music_60.data.model.Track;
 
-public class NowPlayingAdapter extends RecyclerView.Adapter<NowPlayingAdapter.ViewHolder> {
+public class NowPlayingAdapter extends RecyclerView.Adapter<NowPlayingAdapter.ViewHolder>
+        implements ItemTouchHelperAdapter {
     private List<Track> mTracks;
     private LayoutInflater mInflater;
     private int mIndex;
+    private NowPlayingOnClickListener mOnClickListener;
+    private NowPlayingOnChangeListener mOnChangeListener;
 
     public NowPlayingAdapter(Context context, List<Track> tracks, int index) {
         mInflater = LayoutInflater.from(context);
@@ -29,13 +34,13 @@ public class NowPlayingAdapter extends RecyclerView.Adapter<NowPlayingAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = mInflater.inflate(R.layout.item_now_playing, viewGroup, false);
-        return new ViewHolder(view);
+        return new ViewHolder(view, mOnClickListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         viewHolder.setIsRecyclable(false);
-        viewHolder.setData(mTracks.get(i), i);
+        viewHolder.setData(mTracks.get(i));
         if (i == mIndex)
             viewHolder.setPlaying();
     }
@@ -45,26 +50,69 @@ public class NowPlayingAdapter extends RecyclerView.Adapter<NowPlayingAdapter.Vi
         return mTracks.isEmpty() ? 0 : mTracks.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public void onItemDismiss(int position) {
+        mTracks.remove(position);
+        mOnChangeListener.onNowPlayingRemove(mTracks, position);
+        notifyItemRemoved(position);
+    }
 
-        private TextView mTextNumber;
+    @Override
+    public void onItemMove(int fromPosition, int toPosition) {
+        if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                Collections.swap(mTracks, i, i + 1);
+            }
+        } else {
+            for (int i = fromPosition; i > toPosition; i--) {
+                Collections.swap(mTracks, i, i - 1);
+            }
+        }
+        mOnChangeListener.onNowPlayingMove(mTracks, fromPosition, toPosition);
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
+    public void setOnClickListener(NowPlayingOnClickListener listener) {
+        mOnClickListener = listener;
+    }
+
+    public void setOnChangeListener(NowPlayingOnChangeListener listener){
+        mOnChangeListener = listener;
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
         private TextView mTextSong;
         private ImageView mImageNowPlaying;
+        private NowPlayingOnClickListener mListener;
 
-        public ViewHolder(View view) {
+        public ViewHolder(View view, NowPlayingOnClickListener listener) {
             super(view);
-            mTextNumber = view.findViewById(R.id.text_now_number);
             mTextSong = view.findViewById(R.id.text_now_song);
             mImageNowPlaying = view.findViewById(R.id.image_now_playing);
+            mListener = listener;
+            itemView.setOnClickListener(this);
         }
 
-        public void setData(Track track, int number) {
-            mTextNumber.setText(String.valueOf(++number));
+        public void setData(Track track) {
             mTextSong.setText(track.getTitle());
         }
 
         public void setPlaying() {
             mImageNowPlaying.setVisibility(View.VISIBLE);
         }
+
+        @Override
+        public void onClick(View v) {
+            mListener.onNowPlayingClick(getAdapterPosition());
+        }
     }
-}
+
+    public interface NowPlayingOnClickListener {
+        void onNowPlayingClick(int position);
+    }
+
+    public interface NowPlayingOnChangeListener {
+        void onNowPlayingMove(List<Track> tracks, int from, int to);
+        void onNowPlayingRemove(List<Track> tracks, int position);
+    }}

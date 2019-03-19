@@ -143,6 +143,33 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/seekbar_duration" />
 
+
+        <ImageButton
+            android:id="@+id/button_loop_all"
+            style="@style/PlayButtonTheme"
+            android:padding="@dimen/dp_15"
+            android:src="@drawable/loop_all"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/button_previous" />
+
+        <ImageButton
+            android:id="@+id/button_loop_one"
+            style="@style/PlayButtonTheme"
+            android:padding="@dimen/dp_15"
+            android:src="@drawable/loop_one"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/button_previous" />
+
+        <ImageButton
+            android:id="@+id/button_shuffle"
+            style="@style/PlayButtonTheme"
+            android:padding="@dimen/dp_15"
+            android:src="@drawable/ic_shuffle"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/button_previous" />
+
         <ImageButton
             android:id="@+id/button_loop_all"
             style="@style/PlayButtonTheme"
