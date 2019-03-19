@@ -34,7 +34,8 @@ public class NowPlayingAdapter extends RecyclerView.Adapter<NowPlayingAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        viewHolder.setData(i, mTracks.get(i).getTitle());
+        viewHolder.setIsRecyclable(false);
+        viewHolder.setData(mTracks.get(i), i);
         if (i == mIndex)
             viewHolder.setPlaying();
     }
@@ -57,9 +58,9 @@ public class NowPlayingAdapter extends RecyclerView.Adapter<NowPlayingAdapter.Vi
             mImageNowPlaying = view.findViewById(R.id.image_now_playing);
         }
 
-        public void setData(int number, String title) {
-            mTextNumber.setText(number);
-            mTextSong.setText(title);
+        public void setData(Track track, int number) {
+            mTextNumber.setText(String.valueOf(++number));
+            mTextSong.setText(track.getTitle());
         }
 
         public void setPlaying() {

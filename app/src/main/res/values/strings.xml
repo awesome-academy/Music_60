@@ -10,4 +10,5 @@
     <string name="title_local">Local</string>
     <string name="msg_genre_cover">Genre Cover</string>
     <string name="title_now_playing">Now Playing</string>
+    <string name="msg_empty_list">There is no song currently playing</string>
 </resources>

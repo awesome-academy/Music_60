@@ -16,13 +16,17 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+
+import java.util.ArrayList;
 
 import phuchh.com.music_60.R;
 import phuchh.com.music_60.data.model.Track;
 import phuchh.com.music_60.mediaplayer.PlayType;
 import phuchh.com.music_60.service.PlayMusicService;
+import phuchh.com.music_60.ui.nowplaying.NowPlayingFragment;
 import phuchh.com.music_60.utils.Constant;
 import phuchh.com.music_60.utils.StringUtil;
 
@@ -45,6 +49,7 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
     private ImageButton mButtonShuffle;
     private ImageButton mButtonLoopAll;
     private ImageButton mButtonLoopOne;
+    private ImageButton mButtonPlaylist;
     private SeekBar mSeekBar;
     private TextView mTextCurrentPosition;
     private TextView mTextDuration;
@@ -124,6 +129,9 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
                 break;
             case R.id.button_shuffle:
                 onShuffleClicked();
+                break;
+            case R.id.button_toolbar_playlist:
+                onPlaylistClicked();
                 break;
             default:
                 break;
@@ -213,6 +221,7 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
         mButtonShuffle = getView().findViewById(R.id.button_shuffle);
         mButtonLoopAll = getView().findViewById(R.id.button_loop_all);
         mButtonLoopOne = getView().findViewById(R.id.button_loop_one);
+        mButtonPlaylist = getView().findViewById(R.id.button_toolbar_playlist);
         setListener();
     }
 
@@ -234,6 +243,7 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
         mButtonLoopAll.setOnClickListener(this);
         mButtonLoopOne.setOnClickListener(this);
         mButtonShuffle.setOnClickListener(this);
+        mButtonPlaylist.setOnClickListener(this);
     }
 
     private void onPauseClicked() {
@@ -290,5 +300,14 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
         };
         getActivity().bindService(getMyServiceIntent(getActivity()),
                 mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    private void onPlaylistClicked() {
+        if (mService.getTracks()==null) {
+            Toast.makeText(getActivity(), getResources().getText(R.string.msg_empty_list), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        NowPlayingFragment fragment = NowPlayingFragment.newInstance(mService.getTracks(), mService.getTrack());
+        fragment.show(getFragmentManager(), fragment.getTag());
     }
 }
