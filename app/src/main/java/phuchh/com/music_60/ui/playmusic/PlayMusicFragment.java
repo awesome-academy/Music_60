@@ -169,6 +169,15 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
         showPause();
     }
 
+    public void loadData(){
+        mTrack = mService.getTracks().get(mService.getTrack());
+        mTextSong.setText(mTrack.getTitle());
+        mSeekBar.setProgress(START_POSITION);
+        mTextCurrentPosition.setText(StringUtil.convertMilisecondToFormatTime(START_POSITION));
+        mTextDuration.setText(StringUtil.convertMilisecondToFormatTime(START_POSITION));
+        setMainCover();
+        setBarCover();
+    }
     public void loadingSuccess() {
         mSeekBar.setEnabled(true);
         int duration = mService.getDuration();

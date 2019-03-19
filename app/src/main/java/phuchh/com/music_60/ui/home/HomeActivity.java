@@ -19,6 +19,7 @@ import phuchh.com.music_60.data.model.Track;
 import phuchh.com.music_60.data.source.TrackRepository;
 import phuchh.com.music_60.data.source.local.TrackLocalDataSource;
 import phuchh.com.music_60.data.source.remote.TrackRemoteDataSource;
+import phuchh.com.music_60.mediaplayer.MediaRequest;
 import phuchh.com.music_60.service.PlayMusicService;
 import phuchh.com.music_60.ui.online.OnlineFragment;
 import phuchh.com.music_60.ui.playmusic.PlayMusicFragment;
@@ -48,6 +49,14 @@ public class HomeActivity extends AppCompatActivity
         setUpTabLayout();
         initHandler();
         boundToService();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(mService != null && mService.isPlaying()){
+            mHandler.sendEmptyMessage(MediaRequest.LOAD_DATA);
+        }
     }
 
     @Override
