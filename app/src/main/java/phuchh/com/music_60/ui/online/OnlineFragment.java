@@ -2,6 +2,7 @@ package phuchh.com.music_60.ui.online;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -25,6 +26,7 @@ import phuchh.com.music_60.data.source.TrackRepository;
 import phuchh.com.music_60.data.source.local.TrackLocalDataSource;
 import phuchh.com.music_60.data.source.remote.TrackRemoteDataSource;
 import phuchh.com.music_60.service.PlayMusicService;
+import phuchh.com.music_60.ui.listtrack.ListTrackActivity;
 import phuchh.com.music_60.utils.Constant;
 
 import static phuchh.com.music_60.service.PlayMusicService.getMyServiceIntent;
@@ -85,7 +87,8 @@ public class OnlineFragment extends Fragment implements OnlineContract.View,
 
     @Override
     public void onGenreClick() {
-        //TODO: Update genre click listener;
+       Intent intent = new Intent(getActivity(), ListTrackActivity.class);
+       startActivity(intent);
     }
 
     @Override

@@ -43,8 +43,12 @@ public class PlayServiceHandler extends Handler {
             case MediaRequest.STOPPED:
                 fragment.showPlay();
                 break;
+            case MediaRequest.LOAD_DATA:
+                fragment.loadData();
+                break;
             case Constant.UPDATE_SEEKBAR:
                 fragment.requestUpdateSeekBar();
+                break;
             default:
                 break;
         }

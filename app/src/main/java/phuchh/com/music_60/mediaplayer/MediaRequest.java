@@ -13,7 +13,8 @@ import java.lang.annotation.RetentionPolicy;
         MediaRequest.UPDATE_PLAYER,
         MediaRequest.FAILURE,
         MediaRequest.PAUSED,
-        MediaRequest.STOPPED
+        MediaRequest.STOPPED,
+        MediaRequest.LOAD_DATA
 })
 public @interface MediaRequest {
     int LOADING = 1;
@@ -23,4 +24,5 @@ public @interface MediaRequest {
     int FAILURE = 5;
     int PAUSED = 6;
     int STOPPED = 7;
+    int LOAD_DATA = 8;
 }
