@@ -21,8 +21,10 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import phuchh.com.music_60.R;
+import phuchh.com.music_60.adapter.NowPlayingAdapter;
 import phuchh.com.music_60.data.model.Track;
 import phuchh.com.music_60.mediaplayer.PlayType;
 import phuchh.com.music_60.service.PlayMusicService;
@@ -32,7 +34,9 @@ import phuchh.com.music_60.utils.StringUtil;
 
 import static phuchh.com.music_60.service.PlayMusicService.getMyServiceIntent;
 
-public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChangeListener, View.OnClickListener {
+public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChangeListener,
+        View.OnClickListener, NowPlayingAdapter.NowPlayingOnClickListener,
+        NowPlayingAdapter.NowPlayingOnChangeListener {
 
     private static final int START_POSITION = 0;
     private static final long MESSAGE_UPDATE_DELAY = 1000;
@@ -57,6 +61,7 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
     private Handler mHandler;
     private PlayMusicService mService;
     private ServiceConnection mConnection;
+    private NowPlayingFragment mNowPlayingFragment;
 
     public static PlayMusicFragment newInstance() {
         return new PlayMusicFragment();
@@ -138,6 +143,12 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
         }
     }
 
+    @Override
+    public void onNowPlayingClick(int position) {
+        mService.createTrack(position);
+        mNowPlayingFragment.dismiss();
+    }
+
     public void setHandler(Handler handler) {
         mHandler = handler;
     }
@@ -201,7 +212,6 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
                 .load(mTrack.getArtworkUrl())
                 .placeholder(R.drawable.music_cover)
                 .into(mImageMainCover);
-
     }
 
     private void initView() {
@@ -303,11 +313,36 @@ public class PlayMusicFragment extends Fragment implements SeekBar.OnSeekBarChan
     }
 
     private void onPlaylistClicked() {
-        if (mService.getTracks()==null) {
-            Toast.makeText(getActivity(), getResources().getText(R.string.msg_empty_list), Toast.LENGTH_SHORT).show();
+        if (mService.getTracks() == null) {
+            Toast.makeText(getActivity(), getString(R.string.msg_empty_list), Toast.LENGTH_SHORT).show();
             return;
         }
-        NowPlayingFragment fragment = NowPlayingFragment.newInstance(mService.getTracks(), mService.getTrack());
-        fragment.show(getFragmentManager(), fragment.getTag());
+        mNowPlayingFragment = NowPlayingFragment.newInstance(mService.getTracks(), mService.getTrack());
+        mNowPlayingFragment.setOnClickListener(this);
+        mNowPlayingFragment.setOnChangeListener(this);
+        mNowPlayingFragment.show(getFragmentManager(), mNowPlayingFragment.getTag());
+    }
+
+    @Override
+    public void onNowPlayingMove(List<Track> tracks, int from, int to) {
+        mService.setTracks(tracks);
+        if (from < mService.getTrack() && to == mService.getTrack()) {
+            int index = to - 1;
+            mService.setTrack(index);
+        } else if (from == mService.getTrack()) {
+            mService.setTrack(to);
+        } else if (from > mService.getTrack() && to == mService.getTrack()) {
+            int index = to + 1;
+            mService.setTrack(index);
+        }
+    }
+
+    @Override
+    public void onNowPlayingRemove(List<Track> tracks, int position) {
+        mService.setTracks(tracks);
+        if (position == mService.getTrack()) {
+            mService.createTrack(position);
+            mNowPlayingFragment.dismiss();
+        }
     }
 }
