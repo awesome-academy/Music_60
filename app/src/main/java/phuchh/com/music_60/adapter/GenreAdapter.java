@@ -15,11 +15,6 @@ import phuchh.com.music_60.R;
 import phuchh.com.music_60.utils.Constant;
 
 public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> {
-    public static final String[] GENRE_TITLES = {"All Music", "All Audio",
-            "Alternative Rock", "Ambient", "Classical", "Country"};
-    public static final int[] GENRE_COVERS_DRAWABLE = {R.drawable.allmusic,
-            R.drawable.allaudio, R.drawable.alternative_rock,
-            R.drawable.ambient, R.drawable.classical, R.drawable.country_music};
     private LayoutInflater mLayoutInflater;
     private GenreOnClickListener mGenreOnClickListener;
 
@@ -36,12 +31,12 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull GenreAdapter.ViewHolder viewHolder, int i) {
-        viewHolder.setData(GENRE_COVERS_DRAWABLE[i], GENRE_TITLES[i]);
+        viewHolder.setData(Constant.GENRE_COVERS_DRAWABLE[i], Constant.GENRE_TITLES[i]);
     }
 
     @Override
     public int getItemCount() {
-        return GENRE_TITLES.length;
+        return Constant.GENRE_TITLES.length;
     }
 
     public void setGenreListener(GenreOnClickListener listener) {
@@ -68,11 +63,11 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> 
 
         @Override
         public void onClick(View v) {
-            mGenreOnClickListener.onGenreClick();
+            mGenreOnClickListener.onGenreClick(getAdapterPosition());
         }
     }
 
     public interface GenreOnClickListener {
-        void onGenreClick();
+        void onGenreClick(int position);
     }
 }
