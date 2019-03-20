@@ -21,4 +21,10 @@ public class Constant {
     public static final String BREAK_LINE = "\n";
     public static final String INTERNET_NOT_AVAIABLE = "The internet is not available";
     public static final int UPDATE_SEEKBAR = 283;
+    public static final String[] GENRE_TITLES = {"All Music", "All Audio",
+            "Alternative Rock", "Ambient", "Classical", "Country"};
+    public static final int[] GENRE_COVERS_DRAWABLE = {R.drawable.allmusic,
+            R.drawable.allaudio, R.drawable.alternative_rock,
+            R.drawable.ambient, R.drawable.classical, R.drawable.country_music};
+    public static final String EXTRA_GENRE = "EXTRA_GENRE";
 }

@@ -86,8 +86,9 @@ public class OnlineFragment extends Fragment implements OnlineContract.View,
     }
 
     @Override
-    public void onGenreClick() {
+    public void onGenreClick(int position) {
        Intent intent = new Intent(getActivity(), ListTrackActivity.class);
+       intent.putExtra(Constant.EXTRA_GENRE, position);
        startActivity(intent);
     }
 
